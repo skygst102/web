@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="Author" content="">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title></title>
+<script type="text/javascript" src="../js/Zepto1.2.min.js"></script>
+
+<style>
+@keyframes slideUp{
+	0%{height: 50%;}
+	25%{height: 20%;}
+	50%{height: 10px;}
+	75%{height: 6px;}
+	100%{height: 0px;}
+}
+@keyframes slideDown{
+	0%{height: 0px;}
+	25%{height: 4px;}
+	50%{height: 30px;}
+	75%{height: 85%;}
+	100%{height: 100%;}
+}
+.slideUp{-webkit-animation: slideUp 0.1s ease-out forwards;}
+.slideDown{-webkit-animation: slideDown 0.1s ease-in forwards;}
+
+
+.s_tree i{cursor: pointer;}
+.s_tree a{color: #eee;}
+.s_tree ul{list-style: none; padding-left: 30px;}
+.s_tree{background: #eee; width:200px;} 
+.s_tree > ul > li.parent_li{background: #394555;color: #eee;}
+.s_tree .parent_li span{display:block; width:130px;height: 35px;line-height:35px;}
+.s_tree .parent_li li{ position:relative;padding: 5px;}
+.s_tree .parent_li ul{overflow: hidden;height:0;background: #293038;}
+    
+
+.s_tree .parent_li li a::after{content: '';position: absolute;border-top: 1px solid #999;height: 20px;left: -18px;top: 15px;width: 20px;}
+.s_tree .parent_li li a::before{ content: '';position: absolute;  border-left: 1px solid #999;left: -19px;height: 100%;top: -12px;}
+.s_tree .lt a::before{ height:28px!important;}
+
+
+.s_tree2 a{cursor: pointer;}
+.s_tree2 ul{list-style: none; margin:0;padding: 0;}
+.s_tree2{background: #eee; width:200px;} 
+
+.s_tree2 > ul > li.parent_li{background: #394555;color: #eee;}
+.s_tree2 .parent_li span{display:block; width:130px;height: 35px;line-height:35px;}
+.s_tree2 .parent_li li{ position:relative;}
+.s_tree2 .parent_li ul{overflow: hidden;height:0;background: #293038;}
+.s_tree2 .parent_li li a{color: #eee;display: block; width:100%; height: 35px;padding-left:50px; line-height:35px;} 
+.s_tree2 .parent_li li a:hover{background-color: #37424f;}
+
+
+</style>
+		<div id="s_tree1" class='s_tree'>
+			<ul>
+				<li class="parent_li">
+					<span><i>[+]</i><a>二级.........</a></span>
+					<ul>
+						<li class="parent_li">
+							<span><i>[+]</i><a>444...............</a></span>
+							<ul>
+								<li><a href="#">4441111</a></li>
+								<li class="parent_li lt">
+									<span><i>[+]</i><a>5...............</a></span>
+									<ul>	
+										<li><a href="#">555222</a></li>
+										<li><a href="#">555333333</a></li>
+										<li><a href="#">555333333</a></li>
+									</ul>
+
+								</li>
+							</ul>
+
+						</li>
+						<li> <a href="#">222222222</a> </li>
+						<li><a href="#">2323</a></li>
+					</ul>
+				</li>
+
+				<li class="parent_li">
+					<span><i>[+]</i>3.......</span>
+					<ul>
+						
+						<li class="parent_li">
+							<span><i>[+]</i><a>4..........</a></span>
+							<ul>
+								<li class="parent_li">
+									<span><i>[+]</i><a>5........</a></span>
+									<ul>	
+										<li><a href="#">5111111</a></li>
+										<li><a href="#">52222222</a></li>
+										
+									</ul>
+
+								</li>
+								<li><a  href="#">5333333</a></li>
+								
+							</ul>
+
+						</li>
+
+						<li class="parent_li">
+							<span><i>[+]</i><a>444...............</a></span>
+							<ul>
+								<li><a href="#">4441111</a></li>
+								<li class="parent_li lt">
+									<span><i>[+]</i><a>5...............</a></span>
+									<ul>	
+										<li><a href="#">555222</a></li>
+										<li><a href="#">555333333</a></li>
+										<li><a href="#">555333333</a></li>
+									</ul>
+
+								</li>
+							</ul>
+
+						</li>
+
+						<li class="parent_li lt">
+							<span><i>[+]</i><a>444...............</a></span>
+							<ul>
+								<li> <a>4545</a> </li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+
+			</ul>
+			
+
+		</div>
+
+		<div id="s_tree2" class='s_tree2'>
+			<ul>
+				<li class="parent_li">
+					<span><i></i><a>二级.........</a></span>
+					<ul>	
+						<li><a href="#">555222</a></li>
+						<li><a href="#">555333333</a></li>
+						<li><a href="#">555333333</a></li>
+						<li> <a href="#">222222222</a> </li>
+						<li><a href="#">2323</a></li>
+					</ul>
+				</li>
+
+				<li class="parent_li">
+					<span><i></i><a>二级.........</a></span>
+					<ul>	
+						<li><a href="#">555222</a></li>
+						<li><a href="#">555333333</a></li>
+						<li><a href="#">555333333</a></li>
+						<li> <a href="#">222222222</a> </li>
+						<li><a href="#">2323</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+<script>
+function tree(el,cli){
+	var tree=$(el);
+	tree.find('.parent_li '+cli).each(function(i){
+		var ul=$(this).parent().parent();
+		var children=ul.children('ul');
+		$(this).click(function(){
+			if(children.hasClass('slideDown')){
+				ul.find('ul').removeClass()
+				children.addClass('slideUp').css('display','block')
+				
+			}else{
+				ul.find('ul').removeClass()
+				children.addClass('slideDown').css('display','block')
+				
+			}
+			ul.siblings().find('ul').css('display','none').removeClass()
+		})
+	})
+};
+
+tree('.s_tree','i')
+
+tree('.s_tree2','a')
+
+</script>
+
+
+		
+</body>
+</html>
+
+

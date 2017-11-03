@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="zh-CN">
+<meta name="Keywords" content="SuperSlide,jQuery焦点图/幻灯片">
+<meta name="Description" content="SuperSlide 致力于解决网站大部分特效展示问题，使网站代码规范整洁，方便维护更新。网站上常用的“焦点图/幻灯片”、“Tab标签切换”、“图片滚动”、“无缝滚动”等等只需要一个SuperSlide即可解决！还可以多个SuperSlide组合创造更多效果">
+<title>SuperSlide - 焦点图/幻灯片</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.SuperSlide.2.1.1.js"></script>
+</head>
+
+<body>
+    <div id="slideBox" class="slideBox">
+      <div class="hd">
+        <ul><li>1</li><li>2</li><li>3</li></ul>
+      </div>
+      <div class="bd">
+        <ul>
+          <li><a href="" target="_blank"><img src="images/pic1.jpg" /></a></li>
+          <li><a href="" target="_blank"><img src="images/pic2.jpg" /></a></li>
+          <li><a href="" target="_blank"><img src="images/pic3.jpg" /></a></li>
+        </ul>
+      </div>
+
+      <!-- 下面是前/后按钮代码，如果不需要删除即可 -->
+      <a class="prev" href="javascript:void(0)"></a>
+      <a class="next" href="javascript:void(0)"></a>
+
+    </div>
+
+    <script type="text/javascript">
+    jQuery(".slideBox").slide({mainCell:".bd ul",effect:"leftLoop",autoPlay:true});
+    </script>
+
+
+
+</body>
+</html>
+<script type="text/javascript">
+//百度统计代码
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa630f96b6a9dd549675d26373853f7f1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+

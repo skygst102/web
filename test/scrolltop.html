@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src='jquery.js'></script>
+</head>
+<body>
+	<div style='width:200px; height:200px; border: 1px solid #999;'></div>
+	<div id="show"  style='width:200px; height:200px; border: 1px solid #999;'></div>
+	<div style="height:2000px;"></div>	
+
+<script type="text/javascript">
+	//取窗口可视范围的高度
+	function getClientHeight(){  
+	    var clientHeight=0;  
+	    if(document.body.clientHeight&&document.documentElement.clientHeight){  
+	        var clientHeight=(document.body.clientHeight<document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;          
+	    }else{  
+        var clientHeight=(document.body.clientHeight>document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;      
+    }  
+    return clientHeight;  
+}
+//取窗口滚动条高度
+function getScrollTop(){  
+    var scrollTop=0;  
+    if(document.documentElement&&document.documentElement.scrollTop){  
+        scrollTop=document.documentElement.scrollTop;  
+    }else if(document.body){  
+        scrollTop=document.body.scrollTop;  
+    }  
+	    return scrollTop;  
+	}
+	//取文档内容实际高度
+	function getScrollHeight(){  
+	    return Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);  
+	}
+	window.onscroll=function(){
+	    var height=getClientHeight();
+	    var theight=getScrollTop();
+	    var rheight=getScrollHeight();
+	    var bheight=rheight-theight-height;
+	    document.getElementById('show').innerHTML='此时浏览器可见区域高度为：'+height+'<br/>此时文档内容实际高度为：'+rheight+'<br />此时滚动条距离顶部的高度为：'+theight+'<br />此时滚动条距离底部的高度为：'+bheight;
+	}
+	function fixDiv(div_id,offsetTop){
+	    var offsetTop=arguments[1]?arguments[1]:0;
+	    var Obj=$('#'+div_id);
+	    var ObjTop=Obj.offset().top;
+        $(window).scroll(function(){
+         if($(window).scrollTop()<=(ObjTop)){
+	                Obj.css({
+	                    'position':'relative',
+	                    'top':0
+	                });
+	            }else{
+	                Obj.css({
+	                    'position':'fixed',
+	                    'top':0+offsetTop+'px',
+	                    'z-index':1
+	                });
+	            }
+	        });
+	    }
+
+	fixDiv('show',5)
+</script>
+</body>
+</html>
+
+
+
