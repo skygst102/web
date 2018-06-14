@@ -9,9 +9,9 @@ Sv.model('component', function () {
         }
     }
     console.log('执行一次')
-
     var html = Sv.tplEngine(this.tpl, this.data);
     document.querySelector(this.scope).innerHTML = html;
+    
 });
 /* 建立模型 */
 Sv.model('test', function () {

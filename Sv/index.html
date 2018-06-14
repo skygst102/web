@@ -8,6 +8,7 @@
     <title>Document</title>
     <script src="./js/sv.js"></script>
     <script src="./js/test1.js"></script>
+    <script src="./js/event.js"></script>
 </head>
 
 <body>
@@ -15,7 +16,8 @@
         <input type="text">
         <ul>
             <li>1
-                <a href="">1110</a>
+                <a href="#" class="a1">1110</a>
+                <a href="#" class="a2">2220</a>
             </li>
             <li>2</li>
             <li>3</li>
@@ -40,7 +42,24 @@
     <div id="ds"></div>
 
     <script>
-       
+
+
+
+    // var el=document.querySelector('.tt')
+    
+    // on(el,'click mouseover',function () {
+    //     console.log('click')
+        
+    // })
+   
+    
+    console.log($('.tt'))
+
+    $('.tt').on('click mousedown','a.a1',function () {
+        console.log('click')
+        
+    })
+
     </script>
 </body>
 
