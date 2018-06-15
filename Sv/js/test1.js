@@ -1,3 +1,12 @@
+
+function info(obj,msg) {
+    var info='';
+    for (var key in obj) {
+           info+=key+' ';
+    }
+    console.log(info+'---'+msg)
+}
+
 /* 建立模型 */ //函数执行两次，Sv.model（）内被实例化，  Sv.initModel() 内被实例化  使用!this.scope过滤
 Sv.model('component', function () {
     if (!this.scope) {
@@ -9,9 +18,10 @@ Sv.model('component', function () {
         }
     }
     console.log('执行一次')
-    var html = Sv.tplEngine(this.tpl, this.data);
-    document.querySelector(this.scope).innerHTML = html;
-    
+    $.ready(function() {
+        var html = Sv.tplEngine(this.tpl, this.data);
+        document.querySelector(this.scope).innerHTML = html;
+    })
 });
 /* 建立模型 */
 Sv.model('test', function () {

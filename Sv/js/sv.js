@@ -8,14 +8,14 @@
         return new $.prototype.init(selector, context, index);
     };
     $.prototype.init = function (selector, context, index) {
-        this.index = index||-1;
+        this.index = index||null;
         this.context = context || document;
         if (selector && selector.nodeType) {
             this[0] = selector;
             this.length = 1;
             return this;
         } else if (/^#|^./.test(selector)) {
-            this.selector = selector
+            this.selector = selector||null;
             $.nodeList = this.context.querySelectorAll(selector);
             this.length = $.nodeList.length;
             for (var i = 0; i < this.length; i++) {
@@ -26,10 +26,19 @@
         }
     };
     $.fn = $.prototype.init.prototype = {};
-    $.extend = function (source) {
+    $.fnExtend = function (source) {
         for (var key in source) {
             if (!$.fn.hasOwnProperty(key)) {
                 $.fn[key] = source[key];
+            }else{
+                throw '$.fnExtend ('+key+') already exist'
+            }
+        }
+    };
+    $.extend = function (source) {
+        for (var key in source) {
+            if (!$.hasOwnProperty(key)) {
+                $[key] = source[key];
             }else{
                 throw '$.extend ('+key+') already exist'
             }
@@ -39,9 +48,13 @@
     factory($);
 })(this, '$', function ($) {
     
-   
-    
-    function addEvent(element,type,selector,callback,event){
+//    function domReady(type,fn) {
+//         if (document.readyState == "complete") {
+//             fn()
+//         };
+//    }
+
+    function addEvent(element,type,selector,callback){
         var targetEl=document.querySelector(selector);
         function fn(event) {
             if (selector) {
@@ -53,44 +66,54 @@
             }
         }
         if(element.addEventListener){
-            element.addEventListener(type,function(event){
-               fn(event)
-            },false);
-        }else if(element.attachEvent){
-            element.attachEvent('on' + type,function(event){
-                fn(event)
-            });
+            if (type=='DOMContentLoaded') {
+                if (document.readyState == "complete") {
+                    element.addEventListener(type,function(event){fn(event)},false)
+                }
+            }else{
+                element.addEventListener(type,function(event){ fn(event) },false);
+            }
+            
+        }else{
+            if (type=='DOMContentLoaded') {
+                if (document.readyState == "complete") {
+                    var type='onreadystatechange';
+                    element.attachEvent(type,function(event){fn(event)});
+                }
+            }else{
+                var type='on' + type;
+                element.attachEvent(type,function(event){fn(event)});
+            }
+            
         }
     }
-
+    
     function removeEvent(element,type,callback){
         if(element.removeEventListener){
-            element.removeEventListener(type,callback,false);
+            if (type=='DOMContentLoaded') {
+                if (document.readyState == "complete") {
+                    element.removeEventListener(type,callback,false);
+                }
+            }else{
+                element.removeEventListener(type,callback,false);
+            }
         }else{
-            element.detachEvent('on' + type, callback);
+            if (type=='DOMContentLoaded') {
+                if (document.readyState == "complete") {
+                    var type='onreadytstatechange';
+                    element.detachEvent(type, callback);
+                };
+            }else{
+                var type='on' + type;
+                element.detachEvent(type, callback);
+            }
+            
         }
-    }
+    };
 
     $.extend({
-        eq: function (i) {
-            return $(this[i], this.selector, i)
-        },
-        filter: function (e) {
-            return $(e, this[0], 0)
-        },
-    })
-    $.extend({
-        addEvent: function(element,type,callback){
-            add(element,type,callback)
-            return this;
-        },
-        removeEvent: function(element,type,callback){
-            if(element.removeEventListener){
-                element.removeEventListener(type,callback,false);
-            }else{
-                element.detachEvent('on' + type, callback);
-            }
-            return this;
+        ready:function (callback) {
+            addEvent('document','DOMContentLoaded',null,callback)
         },
         getEvent: function(event){
             return event || window.event;
@@ -104,7 +127,6 @@
             }else{
                 event.cancelBubble = true;
             }
-            return this;
         },
         preventDefault: function(event){
             if(event.prevenDefault){
@@ -112,8 +134,26 @@
             }else{
                 event.returnValue = false;
             }
+        },
+    });
+    $.fnExtend({
+        eq: function (i) {
+            return $(this[i], this.selector, i)
+        },
+        filter: function (e) {
+            return $(e, this[0], 0)
+        },
+    });
+    $.fnExtend({
+        addEvent: function(element,type,callback){
+            addEvent(element,type,callback);
             return this;
         },
+        removeEvent: function(element,type,callback){
+            removeEvent(element,type,callback);
+            return this;
+        },
+        
         on : function(events, selector, data, callback, one){
             var events=events.split(/\s/);
             if (typeof selector=='function') {
@@ -131,11 +171,8 @@
             return this;
         },
         
-    })
+    });
 });
-
-
-
 
 var Sv = {
     tplEngine: function (tpl, data) {
@@ -162,8 +199,6 @@ var Sv = {
         return Engine(tpl, data)
     },
     initModule: function (arg, modelFn, modelName) {
-      
-   
         if (arg) {
             var obj={
                 tpl: arg.tpl,
@@ -198,3 +233,11 @@ var Sv = {
         };
     }
 };
+
+
+
+
+
+
+
+
