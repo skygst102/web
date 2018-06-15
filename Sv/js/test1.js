@@ -17,10 +17,10 @@ Sv.model('component', function () {
             console.log('ss')
         }
     }
-    console.log('执行一次')
-    $.ready(function() {
-        var html = Sv.tplEngine(this.tpl, this.data);
-        document.querySelector(this.scope).innerHTML = html;
+    var html = Sv.tplEngine(this.tpl, this.data);
+    var scope=this.scope;
+    $.load(function() {
+        document.querySelector(scope).innerHTML = html;
     })
 });
 /* 建立模型 */
@@ -32,7 +32,6 @@ Sv.model('test', function () {
         }
     }
     //无配置函数的this
-    console.log(this)
 })
 
 

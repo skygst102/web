@@ -47,13 +47,6 @@
     window[o] = $;
     factory($);
 })(this, '$', function ($) {
-    
-//    function domReady(type,fn) {
-//         if (document.readyState == "complete") {
-//             fn()
-//         };
-//    }
-
     function addEvent(element,type,selector,callback){
         var targetEl=document.querySelector(selector);
         function fn(event) {
@@ -62,58 +55,47 @@
                 var target = event.target || event.srcElement;
                 if(target==targetEl) callback();
             }else{
-                callback();
+                if (type=='onreadystatechange') {
+                    if (document.readyState == "complete") {
+                        callback();
+                    }
+                    
+                }else{
+                    callback();
+                }
             }
         }
+      
         if(element.addEventListener){
-            if (type=='DOMContentLoaded') {
-                if (document.readyState == "complete") {
-                    element.addEventListener(type,function(event){fn(event)},false)
-                }
-            }else{
-                element.addEventListener(type,function(event){ fn(event) },false);
-            }
-            
+            element.addEventListener(type,function(event){fn(event)},false)
         }else{
-            if (type=='DOMContentLoaded') {
-                if (document.readyState == "complete") {
-                    var type='onreadystatechange';
-                    element.attachEvent(type,function(event){fn(event)});
-                }
-            }else{
-                var type='on' + type;
-                element.attachEvent(type,function(event){fn(event)});
-            }
-            
+            element.attachEvent('on' + type,function(event){fn(event)});
         }
     }
     
     function removeEvent(element,type,callback){
-        if(element.removeEventListener){
-            if (type=='DOMContentLoaded') {
+        function fn(event) {
+            if (type=='onreadystatechange') {
                 if (document.readyState == "complete") {
-                    element.removeEventListener(type,callback,false);
+                    callback();
                 }
             }else{
-                element.removeEventListener(type,callback,false);
+                callback();
             }
+        }
+        if(element.removeEventListener){
+            element.removeEventListener(type,fn(event),false);
         }else{
-            if (type=='DOMContentLoaded') {
-                if (document.readyState == "complete") {
-                    var type='onreadytstatechange';
-                    element.detachEvent(type, callback);
-                };
-            }else{
-                var type='on' + type;
-                element.detachEvent(type, callback);
-            }
-            
+            element.detachEvent('on' + type, callback);
         }
     };
-
+    
     $.extend({
         ready:function (callback) {
-            addEvent('document','DOMContentLoaded',null,callback)
+            addEvent(document,'DOMContentLoaded',null,callback)
+        },
+        load:function (callback) {
+            addEvent(window,'load',null,callback)
         },
         getEvent: function(event){
             return event || window.event;
@@ -172,6 +154,8 @@
         },
         
     });
+
+
 });
 
 var Sv = {
