@@ -1,4 +1,9 @@
-(function (window, o, factory) {
+/**
+ * author skygst
+ * 
+ */
+'use strict'
+;(function (window, o, factory) {
     function $(selector, context, index) {
         return new $.prototype.init(selector, context, index);
     };
@@ -23,38 +28,37 @@
     $.fn = $.prototype.init.prototype = {};
     $.extend = function (source) {
         for (var key in source) {
-            $.fn[key] = source[key];
+            if (!$.fn.hasOwnProperty(key)) {
+                $.fn[key] = source[key];
+            }else{
+                throw '$.extend ('+key+') already exist'
+            }
         }
     };
     window[o] = $;
     factory($);
 })(this, '$', function ($) {
     
+   
+    
     function addEvent(element,type,selector,callback,event){
         var targetEl=document.querySelector(selector);
+        function fn(event) {
+            if (selector) {
+                var event = event || window.event;
+                var target = event.target || event.srcElement;
+                if(target==targetEl) callback();
+            }else{
+                callback();
+            }
+        }
         if(element.addEventListener){
             element.addEventListener(type,function(event){
-                if (selector) {
-                    var event = event || window.event;
-                    var target = event.target || event.srcElement;
-                    if(target==targetEl){
-                        callback();
-                    }
-                }else{
-                    callback();
-                }
+               fn(event)
             },false);
         }else if(element.attachEvent){
             element.attachEvent('on' + type,function(event){
-                if (selector) {
-                    var event = event || window.event;
-                    var target = event.target || event.srcElement;
-                    if(target==targetEl){
-                        callback();
-                    }
-                }else{
-                    callback();
-                }
+                fn(event)
             });
         }
     }
@@ -74,9 +78,7 @@
         filter: function (e) {
             return $(e, this[0], 0)
         },
-
     })
-
     $.extend({
         addEvent: function(element,type,callback){
             add(element,type,callback)
@@ -113,17 +115,8 @@
             return this;
         },
         on : function(events, selector, data, callback, one){
-           // add(element,type,callback)
-            // events.addEventListener(event,function(event){
-            //     var event = event || window.event;
-            //     var target = event.target || event.srcElement;
-            //     if(target.nodeName.toLowerCase() == ''){
-            //         callback();
-            //     }
-            // },false)
             var events=events.split(/\s/);
             if (typeof selector=='function') {
-                console.log('45')
                 for (var key in events) {
                     addEvent(this[0],events[key],null,selector)
                 }
@@ -135,11 +128,9 @@
             // if (typeof data=='function') {
                 
             // }
-
-         
-            
             return this;
-        }
+        },
+        
     })
 });
 
