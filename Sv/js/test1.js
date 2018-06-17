@@ -6,7 +6,7 @@ function info(obj,msg) {
     }
     console.log(info+'---'+msg)
 }
-
+console.log(Sv)
 /* 建立模型 */ //函数执行两次，Sv.model（）内被实例化，  Sv.initModel() 内被实例化  使用!this.scope过滤
 Sv.model('component', function () {
     if (!this.scope) {
@@ -19,7 +19,7 @@ Sv.model('component', function () {
     }
     var html = Sv.tplEngine(this.tpl, this.data);
     var scope=this.scope;
-    $.load(function() {
+    $.ready(function() {
         document.querySelector(scope).innerHTML = html;
     })
 });

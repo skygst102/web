@@ -48,48 +48,22 @@
     factory($);
 })(this, '$', function ($) {
     function addEvent(element,type,selector,callback){
-        var targetEl=document.querySelector(selector);
-        function fn(event) {
+        var fn=function (event) {
+            var targetEl=document.querySelector(selector);
             if (selector) {
                 var event = event || window.event;
                 var target = event.target || event.srcElement;
                 if(target==targetEl) callback();
             }else{
-                if (type=='onreadystatechange') {
-                    if (document.readyState == "complete") {
-                        callback();
-                    }
-                    
-                }else{
-                    callback();
-                }
-            }
-        }
-      
-        if(element.addEventListener){
-            element.addEventListener(type,function(event){fn(event)},false)
-        }else{
-            element.attachEvent('on' + type,function(event){fn(event)});
-        }
-    }
-    
-    function removeEvent(element,type,callback){
-        function fn(event) {
-            if (type=='onreadystatechange') {
-                if (document.readyState == "complete") {
-                    callback();
-                }
-            }else{
                 callback();
             }
         }
-        if(element.removeEventListener){
-            element.removeEventListener(type,fn(event),false);
-        }else{
-            element.detachEvent('on' + type, callback);
-        }
+        element.addEventListener(type,function(event){fn(event)},false)
+    }
+    function removeEvent(element,type,callback){
+        element.removeEventListener(type,callback,false);
     };
-    
+  
     $.extend({
         ready:function (callback) {
             addEvent(document,'DOMContentLoaded',null,callback)
@@ -127,12 +101,12 @@
         },
     });
     $.fnExtend({
-        addEvent: function(element,type,callback){
-            addEvent(element,type,callback);
+        addEvent: function(type,selector,callback){
+            addEvent(this,type,selector,callback);
             return this;
         },
-        removeEvent: function(element,type,callback){
-            removeEvent(element,type,callback);
+        removeEvent: function(type,fnName){
+            removeEvent(this,type,fnName);
             return this;
         },
         
