@@ -6,7 +6,7 @@ function info(obj,msg) {
     }
     console.log(info+'---'+msg)
 }
-/* 建立模型 */ //函数执行两次，Sv.model（）内被实例化，  Sv.initModel() 内被实例化  使用!this.scope过滤
+/* 建立模型 */
 Sv.model('component', function () {
     this.component = {
         ss: function () {
