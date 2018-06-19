@@ -1,4 +1,4 @@
-
+'use strict'
 function info(obj,msg) {
     var info='';
     for (var key in obj) {
@@ -6,6 +6,8 @@ function info(obj,msg) {
     }
     console.log(info+'---'+msg)
 }
+
+
 /* 建立模型 */
 Sv.model('component', function () {
     this.component = {
@@ -14,10 +16,22 @@ Sv.model('component', function () {
         }
     }
     this.action=function () {
-        var html = Sv.tplEngine(this.tpl, this.data);
+        var vdom=Sv.vdom(this.tpl);
+        $.forEach(vdom.querySelectorAll('*'),function(key,i,self){
+            var tdata=key.childNodes[0].nodeValue.replace(/\{\{|\}\}/g,'');
+            key.setAttribute('tdata',tdata);
+        })
+        var html = Sv.tplEngine(vdom.innerHTML, this.data);
         $.ready(function() {
             document.querySelector(this.scope).innerHTML = html;
-        }.bind(this))
+            var dom=document.querySelector(this.scope);
+            $.forEach(dom.querySelectorAll('*'),function(key,i,self){
+                key.tdata=key.getAttribute('tdata');
+                key.removeAttribute('tdata');
+            }.bind(this));
+           //console.log(document.querySelector(this.scope).querySelectorAll('*')[0].tdata)
+         }.bind(this));
+
     }
 });
 /* 建立模型 */
@@ -39,7 +53,7 @@ var tpl = new Sv.component({
     data: {
         k: '<script>'
     },
-    tpl: '<div>{{k}}</div>',
+    tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div>',
     run: function () {
         info(this, '!this is a "run" function 137')
         // console.log(this.tpl)
@@ -71,5 +85,5 @@ if (tpl.tpl) {
     info(tpl, '!this is a "tpl obj" function ')
 }
 
-console.log()
+
 console.log(tpl.data.k='123')

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./jquery.js"></script>
+   <!-- <script src="./vue.min.js"></script> -->
+</head>
+<body>
+
+
+
+<div class="svt">
+    <input type="text" value='000value'>
+    <ul>
+        <li class="li1" style='color:red'>1111
+            <a href="">aaaa</a>
+            <a href="">aaaa</a>
+        </li>
+        <li class="li2">2222
+            <a href="">aaaa</a>
+        </li>
+        <li class="li3">3333
+            <a href="">aaaa</a>
+        </li>
+    </ul>
+</div>
+
+    <script>
+
+
+
+function defineProperty(vm,key,val,getter,setter) {
+    Object.defineProperty(vm, key, {
+        enumerable : true,
+        configurable : true,
+        get: function() {
+            if (getter!=null) return getter(val,key);
+            return val;
+        }, 
+        set: function(v) {
+            if (setter!=null)setter(v,key);return;
+            val=v;
+        }
+    })  
+};
+
+function observe(mapData,vm,getter,setter){
+        Object.keys(mapData).forEach(function(key){
+            defineProperty(vm,key,mapData[key],getter,setter); 
+        }); 
+};
+function vdom(parentNode){
+    var flagment=document.createDocumentFragment();
+    flagment.appendChild(document.createElement('vdom'));
+    var html=document.querySelector(parentNode);
+    var vdom=flagment.querySelector('vdom');
+    vdom.innerHTML=html.innerHTML;
+    return vdom;
+}
+//============================================================
+function domGetter(scope,val,key){
+    //var bindAttr='html val attr class height height css'
+
+    var arr,filter_1=/val|html|height|width/;
+    if(filter_1.test(key)){
+        arr=$(scope)[key]();
+    }else{
+        arr=$(scope).attr(key);//访问自定义属性时
+    }
+    return arr;
+};
+function domSetter(scope,val,key){
+    var filter_1=/css|html|attr|height|width/;
+    if(filter_1.test(key)){
+        $(scope)[key](val);
+    }else if(key=='class'){
+        $(scope).addClass(key);
+    }else{
+        $(scope).attr(key);
+    }
+};
+
+function Sv(){}
+
+Sv.prototype.curd=function (o) {  
+    this.vm=Object.create(null);//所绑定的数据，和所在元素。 
+    this._controller=Object.create(null);;//模块对应方法
+    this.event=Object.create(null);//模块对应事件与对应方法
+    this.data='';
+    var self=this;
+    //this.scope=o.scope.replace(/(^\s*)|(\s*$)/g,'');
+    //var _i=this.scope.search(/\s/),
+    //接口过滤
+    this.bind=Object.create(null);
+    
+    this.scope='div li';
+
+    this.controller=function(){
+        //controller可以是一组方法的集合对象，也可以是单独的声明了的函数方法
+        //统一处理
+
+        console.log(arguments[0])
+        if (typeof arguments[0]=='object') {
+            for (var key in arguments[0]) {
+                //执行集合中的每个方法并将，模块数据传递给函数
+                var fn=arguments[0][key](this.vm);
+               // this._controller[key]=fn;
+            }
+            //console.log('object')
+        }else if(typeof arguments[0]=='function'){
+                arguments[0](this.vm);
+        }else{
+            var fn=arguments[1];
+            this._controller[arguments[0]]=fn;
+
+           
+           /// console.log('function')
+        }
+    };
+    var bindAttr='html,val,attr,class,height,width,css,';
+    bindAttr=bindAttr.concat(o.bind);
+    //事件过滤
+    var portFilter=/scope|data/;
+    for (var key in o) {
+        if (!portFilter.test(key)) {
+            var bindAttr;
+            this.event[key]=[];
+            this.event[key].push(o[key]);
+            bindArr=bindAttr.split(',');
+            for(var key in bindArr){
+                this.bind[bindArr[key]]='';
+            }
+        }
+    };
+    console.log(this.event)
+    console.log(this.bind)
+   // console.log(vdom(parent))
+    //===================================================
+    var stateScope=document.querySelectorAll('div li');
+    stateScope.forEach(function(v,i){
+        self.vm[i]=Object.create(null);
+        observe(self.bind,self.vm[i],function(val,key){
+           // console.log('getter!')
+            return  domGetter(stateScope[i],val,key);
+        },function(val,key){
+            domSetter(stateScope[i],val,key);
+        });
+    })
+    
+    //===================================================
+    Object.keys(this.event).forEach(function(value,index){
+       $(document).on(value,self.scope,{vm:self.vm,e:value},handle);
+    });
+    function handle(event){
+        var vm=event.data.vm;
+        var index=$(this).index();
+        //执行事件对应方法
+        for(var key in self.event[event.data.e]){
+            self.event[event.data.e][key].call(self,vm,event.target);
+        }
+    }; 
+    //===================================================
+};
+
+
+Sv=new Sv();
+ ;(function(){
+    var view={
+        html_1:'<div>11111111111111</div>',
+        html_2:'<div>22222222222222</div>',
+        html_3:'<div>33333333333333</div>'
+    }
+
+    var ss= new Sv.curd({
+        click:function(vm,el){
+                el.style.color='red';
+                console.info('我是 事件 controller; log(vm);log(vm.html)')
+                console.log(vm)
+
+                console.log(this)
+                console.info('_controller')
+                console.log(this._controller)
+               // vm.value='132';
+                /* console.log(objData);
+                console.log(objData.html) */
+           
+        }
+        ,dblclick:function(vm,el){
+               // vm.html='v v v';
+                console.log(el.style.color='green')
+                console.info('我是dblclick 事件 controller; log(vm)')
+                console.log(vm)
+           
+        }
+        
+    });
+   
+    ss.controller('run',function(vm){
+   
+       // vm.class='cc bb';
+       // vm.html='h h h';
+       // vm.html='v v v';
+        
+        // console.log(vm);
+        
+        //console.log(a)
+    }) 
+    ss.controller('run2',function(vm){
+       
+       // console.log(a)
+    }) 
+
+    ss.controller(function(){
+        console.log('ing')
+    })
+
+  
+    
+
+
+
+         
+/* function  jj(val,key) {
+    var arr=$('div li')[val](key);
+    console.log(arr);
+    
+}
+
+jj('html') */
+// }())
+
+
+/* var flagment=document.createDocumentFragment();
+flagment.appendChild(document.createElement('vdom'));
+var html=document.querySelector('.svt');
+var vdom=flagment.querySelector('vdom');
+vdom.innerHTML=html.innerHTML;
+
+
+
+document.querySelector('p').innerHTML=vdom.innerHTML;
+
+
+console.log(vdom);
+
+ var oo={};
+console.log($(vdom).find('li'))
+
+
+
+document.querySelector('p').innerHTML=vdom.innerHTML; */
+
+
+/*
+
+程序中的用户界面如下：
+
+[ input age to filt users ... ]
+
+* XiaoMing 16
+* Lili 61
+* Tom 36 
+
+*/
+
+// 只需要一个 jQuery 来简化 DOM 的操作
+// 使用 webpack 或者 browserify 的打包来提供 module 的支持
+/* import * as JQuery from 'jquery'
+
+type User = {   // 定义 User 这个数据项
+  name: string
+  age: number
+}
+
+function filtByName(users: Array<User>, age: number): Array<User> {
+// 通过 age 过滤用户，只需要等于 age 的用户
+  var result: Array<User>  = []
+  for (var user of users) {
+    if (user.age === age) {
+      result.push(user)
+    }
+  }
+  return result
+}
+
+function renderUserItem(user: User): string {
+// 渲染一个列表项
+  return `
+<li>${user.name} ${user.age}</li>
+`
+}
+
+function renderUserItems(users: Array<User>): string {
+// 渲染一个列表组
+  var items = []
+  for (var user of users) {
+    items.push(renderUserItem(user))
+  }
+  return `${items.join('\n')}`
+}
+
+JQuery(document).on('change', '#user input', function (e) {
+// 输入 age，过滤，重新渲染
+  var list = JQuery('#user ul')
+  var age = parseInt(JQuery(this).val())
+  listhtml(renderUserItems(filtByName(users, age)))
+})
+
+JQuery(document).on('click', '#user li', function (e) {
+// 点击一个列表项，改变其激活状态
+  var items = JQuery('#user li') 
+  var activeItem = JQuery(this)
+  items.removeClass('active')
+  activeItem.addClass('active')
+})
+进一步，你可以抽象 ``JQuery(document).on('change', '#user input'`` 和 ``JQuery(document).on('click', '#user li'``。比如说强制每个元素使用一个 data-path 来作为路径选择器：var app = new MyDefineApp()
+
+app.change('/user/input', function () {
+  var list = app.find('/user/ul')
+  var age = parseInt(this.val())
+  list.html(renderUserItems(filtByName(users, age)))
+})
+
+app.click('/user/li', function () {
+  var items = app.find('/user/li') 
+  items.removeClass('active')
+  this.addClass('active')
+}) */
+        </script>
+</body>
+</html>

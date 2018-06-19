@@ -2,20 +2,20 @@
  * author skygst
  * 
  */
-'use strict'
-;(function (window, o, factory) {
+'use strict';
+(function (window, o, factory) {
     function $(selector, context, index) {
         return new $.prototype.init(selector, context, index);
     };
     $.prototype.init = function (selector, context, index) {
-        this.index = index||null;
+        this.index = index || null;
         this.context = context || document;
         if (selector && selector.nodeType) {
             this[0] = selector;
             this.length = 1;
             return this;
         } else if (/^#|^./.test(selector)) {
-            this.selector = selector||null;
+            this.selector = selector || null;
             $.nodeList = this.context.querySelectorAll(selector);
             this.length = $.nodeList.length;
             for (var i = 0; i < this.length; i++) {
@@ -30,8 +30,8 @@
         for (var key in source) {
             if (!$.fn.hasOwnProperty(key)) {
                 $.fn[key] = source[key];
-            }else{
-                throw '$.fnExtend ('+key+') already exist'
+            } else {
+                throw '$.fnExtend (' + key + ') already exist'
             }
         }
     };
@@ -39,56 +39,73 @@
         for (var key in source) {
             if (!$.hasOwnProperty(key)) {
                 $[key] = source[key];
-            }else{
-                throw '$.extend ('+key+') already exist'
+            } else {
+                throw '$.extend (' + key + ') already exist'
             }
         }
     };
     window[o] = $;
     factory($);
 })(this, '$', function ($) {
-    function addEvent(element,type,selector,callback){
-        var fn=function (event) {
-            var targetEl=document.querySelector(selector);
+    function addEvent(element, type, selector, callback) {
+        var fn = function (event) {
+            var targetEl = document.querySelector(selector);
             if (selector) {
                 var event = event || window.event;
                 var target = event.target || event.srcElement;
-                if(target==targetEl) callback();
-            }else{
+                if (target == targetEl) callback();
+            } else {
                 callback();
             }
         }
-        element.addEventListener(type,function(event){fn(event)},false)
+        element.addEventListener(type, function (event) {
+            fn(event)
+        }, false)
     }
-    function removeEvent(element,type,callback){
-        element.removeEventListener(type,callback,false);
+
+    function removeEvent(element, type, callback) {
+        element.removeEventListener(type, callback, false);
     };
-  
     $.extend({
-        ready:function (callback) {
-            addEvent(document,'DOMContentLoaded',null,callback)
+        ready: function (callback) {
+            addEvent(document, 'DOMContentLoaded', null, callback)
         },
-        load:function (callback) {
-            addEvent(window,'load',null,callback)
+        load: function (callback) {
+            addEvent(window, 'load', null, callback)
         },
-        getEvent: function(event){
+        getEvent: function (event) {
             return event || window.event;
         },
-        getTarget: function(event){
+        getTarget: function (event) {
             return event.target || event.srcElement;
         },
-        stopPropagation: function(event){
-            if(event.stopPropagation){
+        stopPropagation: function (event) {
+            if (event.stopPropagation) {
                 event.stopPropagation();
-            }else{
+            } else {
                 event.cancelBubble = true;
             }
         },
-        preventDefault: function(event){
-            if(event.prevenDefault){
+        preventDefault: function (event) {
+            if (event.prevenDefault) {
                 event.preventDefault();
-            }else{
+            } else {
                 event.returnValue = false;
+            }
+        },
+        forEach: function (o, fn) {
+            if (o.forEach) {
+                o.forEach(function () {
+                    fn.apply(this, arguments);
+                });
+            } else {
+                try {
+                    Array.prototype.slice.call(o).forEach(function () {
+                        fn.apply(this, arguments)
+                    });
+                } catch (error) {
+                    console.warn(error)
+                }
             }
         },
     });
@@ -101,38 +118,55 @@
         },
     });
     $.fnExtend({
-        addEvent: function(type,selector,callback){
-            addEvent(this,type,selector,callback);
+        addEvent: function (type, selector, callback) {
+            addEvent(this, type, selector, callback);
             return this;
         },
-        removeEvent: function(type,fnName){
-            removeEvent(this,type,fnName);
+        removeEvent: function (type, fnName) {
+            removeEvent(this, type, fnName);
             return this;
         },
-        
-        on : function(events, selector, data, callback, one){
-            var events=events.split(/\s/);
-            if (typeof selector=='function') {
+
+        on: function (events, selector, data, callback, one) {
+            var events = events.split(/\s/);
+            if (typeof selector == 'function') {
                 for (var key in events) {
-                    addEvent(this[0],events[key],null,selector)
+                    addEvent(this[0], events[key], null, selector)
                 }
-            }else{
+            } else {
                 for (var key in events) {
-                    addEvent(this[0],events[key],selector,data)
+                    addEvent(this[0], events[key], selector, data)
                 }
             }
             // if (typeof data=='function') {
-                
+
             // }
             return this;
         },
-        
+
     });
 
 
 });
 
 var Sv = {
+    vdom: function (parentNode,vdomName,vdomAttr) {
+        var vdomName=vdomName||'vdom';
+        var flagment = document.createDocumentFragment();
+        var createEl=document.createElement(vdomName);
+        for (var key in vdomAttr) {
+            createEl.setAttribute(key,vdomAttr[key])
+        }
+        flagment.appendChild(createEl);
+        var vdom = flagment.querySelector(vdomName);
+        if (typeof parentNode != 'string') {
+            var html = document.querySelector(parentNode);
+            vdom.innerHTML = html.innerHTML;
+        } else {
+            vdom.innerHTML = parentNode;
+        }
+        return vdom;
+    },
     tplEngine: function (tpl, data) {
         var escape = function (html) {
             return String(html).replace(/&(?!\w+;)/g, '$amp;').replace(/</g, '&lt;')
@@ -145,7 +179,7 @@ var Sv = {
                     return "' + escape(" + value + ")+ '"
                 }).replace(/<%([\s\S]+?)%>/g, function (match, value) {
                     return "';\n" + value + "\ntpl+='";
-                }).replace(/(tpl\+=\'\';)/g, '')
+                }).replace(/(tpl\+=\'\';)/g, '');
             tpl = "tpl='" + tpl + "';";
             tpl = 'var tpl="";\nwith(obj||{}){\n' + tpl + '\n}\nreturn tpl;';
             return new Function('obj', 'escape', tpl);
@@ -158,15 +192,14 @@ var Sv = {
     },
     initModule: function (arg, modelFn, modelName) {
         if (arg) {
-            var obj={
+            var obj = {
                 tpl: arg.tpl,
                 data: arg.data,
                 scope: typeof arg === 'string' ? arg : arg.scope, //new Sv.template('#dss')
             }
-            if (arg.extend&&arg.extend[0]){
-                obj[arg.extend[0]]=Sv[arg.extend[0]+'Extend'];
+            if (arg.extend && arg.extend[0]) {
+                obj[arg.extend[0]] = Sv[arg.extend[0] + 'Extend'];
             }
-            
             modelFn.prototype = obj;
             var model_o = new modelFn();
             model_o.action();
@@ -176,7 +209,7 @@ var Sv = {
             }
         };
 
-         
+
         //执行实例对象controller函数
         this.controller = function (fn) {
             fn ? fn.call(model_o) : null;
@@ -186,17 +219,9 @@ var Sv = {
 
     },
     model: function (modelName, modelFn) {
-        Sv[modelName+'Extend']=new modelFn()[modelName];
+        Sv[modelName + 'Extend'] = new modelFn()[modelName];
         Sv[modelName] = function (arg) {
             Sv.initModule.call(this, arg, modelFn, modelName)
         };
     }
 };
-
-
-
-
-
-
-
-
