@@ -169,6 +169,7 @@ var Sv = {
             
             modelFn.prototype = obj;
             var model_o = new modelFn();
+            model_o.action();
             //将配置赋值到根对象
             for (var key in arg) {
                 if (key != 'controller') this[key] = arg[key]
