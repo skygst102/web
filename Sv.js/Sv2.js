@@ -113,9 +113,9 @@ Sv.Extend({
 	each:function(obj,fn) {
 		if(typeof obj.length=='number'){
 			var fnReturn;
-			for (var i = 0; i < obj.length; i++)fn.call(obj,i);
+			for (var i = 0; i < obj.length; i++)fn.call(obj,obj[i],i);
 		}else if(obj instanceof Object){
-			for (var key in obj)fn.call(obj, key);
+			for (var key in obj)fn.call(obj, obj[key],i);
 		}
 	},
 	trys:function(fn){

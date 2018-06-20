@@ -8,7 +8,7 @@ function info(obj, msg) {
     console.log(info + '---' + msg)
 }
 
-
+var obj={}
 /* 建立模型 */
 Sv.model('component', function () {
     this.component = {
@@ -16,35 +16,57 @@ Sv.model('component', function () {
             console.log('ss')
         }
     }
+    this.observe={};
     this.action = function () {
+        var arr=[];
         var vdom = Sv.vdom(this.tpl);
-        var control=[''];
-        $.forEach(vdom.querySelectorAll('*'), function (key, i, self) {
+        $.each(vdom.querySelectorAll('*'), function (key, i) {
             var tdata = key.childNodes[0].nodeValue.replace(/\{\{|\}\}/g, '');
-            //name(tdata);
             key.setAttribute('tdata', tdata);
         });
-        // function name(tdata) {
-        //    for(var i=0; i<control.length;i++){
-            
-        //     }
-        // }
-        console.log(control)
         var html = Sv.tplEngine(vdom.innerHTML, this.data);
+        
+        //处理dom
         $.ready(function () {
             document.querySelector(this.scope).innerHTML = html;
-            var dom = document.querySelector(this.scope);
-            $.forEach(dom.querySelectorAll('*'), function (key, i, self) {
-                key.tdata = key.getAttribute('tdata');
+            var dom = document.querySelector(this.scope).querySelectorAll('*');
+            $.each(dom, function (key, i,self) {
+                var tdata = key.tdata = key.getAttribute('tdata');
                 key.removeAttribute('tdata');
+                arr.push([tdata,key]);
+                if (!this.observe.hasOwnProperty(key)) {
+                    this.observe[tdata] =[];
+                }
             }.bind(this));
-
+            //映射对象
+            $.each(arr,function(key,i,arr){
+                this.observe[key[0]].push(key[1])
+            }.bind(this))
+        
             //test
             // var dd=document.querySelector(this.scope).querySelectorAll('*');
             // [].slice.call(dd).forEach(function (key,i,self) {
             //     console.log(key.tdata)
             // }) 
+           
         }.bind(this));
+        obj=this.observe
+        
+        Sv.observe(this.data,this.data,null,setter);
+        function setter(val,key){
+            console.log('4545454545')
+                // $.ready(function(){
+                //     console.log(obj)
+                //     console.log('12')
+                //     $.each(this.observe[key],function(key,i,arr){
+                //         console.log(key.innerHTML)
+                //         key.innerHTML=val
+                //     })
+                   
+                // }.bind(this))
+           
+        }
+        
     }
 });
 /* 建立模型 */
@@ -64,15 +86,18 @@ var tpl = new Sv.component({
     scope: '#dss',
     extend: ['test'],
     data: {
-        k: '<script>'
+        k: '<script>',
+        s:'0.000'
     },
-    tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div>',
+    tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div><div>{{s}}</div>',
     run: function () {
         info(this, '!this is a "run" function 137')
         // console.log(this.tpl)
         if (this.test.tt() == 'tt') {
             console.log('调用成功')
         }
+        console.log(this)
+        console.log(this.data.k='12')
 
     },
 })
@@ -99,6 +124,9 @@ if (tpl.tpl) {
 }
 
 
-console.log(tpl.data.k = '123')
+// $.load(function(){
+//     tpl.data.k = 'k===+++++'
+//     console.log(tpl)
+// })
 
 

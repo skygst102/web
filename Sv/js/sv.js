@@ -62,7 +62,7 @@
             fn(event)
         }, false)
     }
-
+    
     function removeEvent(element, type, callback) {
         element.removeEventListener(type, callback, false);
     };
@@ -72,6 +72,16 @@
         },
         load: function (callback) {
             addEvent(window, 'load', null, callback)
+        },
+        each:function(obj,fn) {
+            var r;
+            if(typeof obj.length=='number'){
+                for (var i = 0; i < obj.length; i++){
+                    if (fn.call(obj,obj[i],i,obj)===false||i==100) break;  
+                }
+            }else if(obj instanceof Object){
+                for (var key in obj)fn.call(obj, obj[key],i,obj);
+            }
         },
         getEvent: function (event) {
             return event || window.event;
@@ -91,21 +101,6 @@
                 event.preventDefault();
             } else {
                 event.returnValue = false;
-            }
-        },
-        forEach: function (o, fn) {
-            if (o.forEach) {
-                o.forEach(function () {
-                    fn.apply(this, arguments);
-                });
-            } else {
-                try {
-                    Array.prototype.slice.call(o).forEach(function () {
-                        fn.apply(this, arguments)
-                    });
-                } catch (error) {
-                    console.warn(error)
-                }
             }
         },
     });
@@ -139,14 +134,12 @@
                 }
             }
             // if (typeof data=='function') {
-
+                //TODO
             // }
             return this;
         },
 
     });
-
-
 });
 
 var Sv = {
@@ -155,13 +148,15 @@ var Sv = {
             enumerable: true,
             configurable: true,
             get: function () {
-                if (getter != null) getter(val, key);
-                return;
+                if (getter != null) {getter(val, key);return};
                 return val;
             },
             set: function (v) {
-                if (setter != null) setter(v, key);
-                return;
+                //TODO
+                $.ready(function(){
+                    console.log('46')
+                })
+                if (setter != null) {setter(v, key);return};
                 val = v;
             }
         })
@@ -226,13 +221,11 @@ var Sv = {
             modelFn.prototype = obj;
             var model_o = new modelFn();
             model_o.action();
-            //将配置赋值到根对象
+            //将配置赋值到根对象模型
             for (var key in arg) {
                 if (key != 'controller') this[key] = arg[key]
             }
         };
-
-
         //执行实例对象controller函数
         this.controller = function (fn) {
             fn ? fn.call(model_o) : null;
