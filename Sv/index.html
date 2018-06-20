@@ -9,11 +9,24 @@
     <script src="./js/sv.js"></script>
     <script src="./js/test1.js"></script>
     <script src="./js/event.js"></script>
-    
+
 </head>
+<style>
+    #content {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        height: 240px;
+        width: 70%;
+    }
+</style>
 
 <body>
-    <div class="tt">
+
+    <div class="tt" id='content'>
         <input type="text">
         <ul>
             <li>1
@@ -43,27 +56,64 @@
     <div id="ds"></div>
 
     <script>
+        // var el=document.querySelector('.tt')
+
+        // on(el,'click mouseover',function () {
+        //     console.log('click')
+
+        // })
+
+
+        console.log($('.tt'))
+
+        // $('.tt').on('click mousedown','a.a1',function () {
+        //     console.log('click')
+
+        // })
+
+        function defineProperty(mapdata, key, val, getter, setter) {
+            Object.defineProperty(mapdata, key, {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    if (getter != null) getter(val, key);
+                    return val;
+                },
+                set: function (v) {
+                    if (setter != null) setter(v, key);
+                    val = v;
+                }
+            })
+        };
+
+        function observe(sourcedata, mapdata, getter, setter) {
+            Object.keys(sourcedata).forEach(function (key) {
+                defineProperty(mapdata, key, sourcedata[key], getter, setter);
+            });
+        };
+
+
+        var data = {
+            a: '1',
+            b: '2',
+            c: '3',
+            d: '4',
+            e: '5'
+        }
+        var data2 = {
+            a: ['a', 'b', 'c'],
+            b: {
+                a: '12'
+            }
+        }
+
+        var vm = {}
+
+        observe(data, data)
 
 
 
-    // var el=document.querySelector('.tt')
-    
-    // on(el,'click mouseover',function () {
-    //     console.log('click')
-        
-    // })
-   
-    
-    console.log($('.tt'))
-
-    // $('.tt').on('click mousedown','a.a1',function () {
-    //     console.log('click')
-        
-    // })
-    
-
-   
- 
+        console.log(data)
     </script>
 </body>
 

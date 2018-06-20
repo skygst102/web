@@ -150,12 +150,33 @@
 });
 
 var Sv = {
-    vdom: function (parentNode,vdomName,vdomAttr) {
-        var vdomName=vdomName||'vdom';
+    defineProperty: function (mapdata, key, val, getter, setter) {
+        Object.defineProperty(mapdata, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                if (getter != null) getter(val, key);
+                return;
+                return val;
+            },
+            set: function (v) {
+                if (setter != null) setter(v, key);
+                return;
+                val = v;
+            }
+        })
+    },
+    observe: function (sourcedata, mapdata, getter, setter) {
+        Object.keys(sourcedata).forEach(function (key) {
+            Sv.defineProperty(mapdata, key, sourcedata[key], getter, setter);
+        });
+    },
+    vdom: function (parentNode, vdomName, vdomAttr) {
+        var vdomName = vdomName || 'vdom';
         var flagment = document.createDocumentFragment();
-        var createEl=document.createElement(vdomName);
+        var createEl = document.createElement(vdomName);
         for (var key in vdomAttr) {
-            createEl.setAttribute(key,vdomAttr[key])
+            createEl.setAttribute(key, vdomAttr[key])
         }
         flagment.appendChild(createEl);
         var vdom = flagment.querySelector(vdomName);
@@ -198,7 +219,9 @@ var Sv = {
                 scope: typeof arg === 'string' ? arg : arg.scope, //new Sv.template('#dss')
             }
             if (arg.extend && arg.extend[0]) {
-                obj[arg.extend[0]] = Sv[arg.extend[0] + 'Extend'];
+                arg.extend.forEach(function (key, i, self) {
+                    obj[key] = Sv[key + 'Extend'];
+                })
             }
             modelFn.prototype = obj;
             var model_o = new modelFn();
