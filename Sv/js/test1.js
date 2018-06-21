@@ -51,19 +51,14 @@ Sv.model('component', function () {
             // }) 
            
        // }.bind(this));
-        var obj=this.observe;
-        
+        var observe=this.observe;
         Sv.observe(this.data,this.data,null,setter);
         function setter(val,key){
             console.info('4545454545')
-                // $.ready(function(){
-                    $.each(obj[key],function(key,i,arr){
-                       // console.log(key.innerHTML)
-                        key.innerHTML=val
-                    })
-                   
-                // })
-        }
+            $.each(observe[key],function(key,i,arr){
+                key.innerHTML=val
+            })
+        };
         
     }
 });
