@@ -62,7 +62,7 @@
             fn(event)
         }, false)
     }
-    
+
     function removeEvent(element, type, callback) {
         element.removeEventListener(type, callback, false);
     };
@@ -73,14 +73,14 @@
         load: function (callback) {
             addEvent(window, 'load', null, callback)
         },
-        each:function(obj,fn) {
+        each: function (obj, fn) {
             var r;
-            if(typeof obj.length=='number'){
-                for (var i = 0; i < obj.length; i++){
-                    if (fn.call(obj,obj[i],i,obj)===false||i==100) break;  
+            if (typeof obj.length == 'number') {
+                for (var i = 0; i < obj.length; i++) {
+                    if (fn.call(obj, obj[i], i, obj) === false || i == 100) break;
                 }
-            }else if(obj instanceof Object){
-                for (var key in obj)fn.call(obj, obj[key],i,obj);
+            } else if (obj instanceof Object) {
+                for (var key in obj) fn.call(obj, obj[key], i, obj);
             }
         },
         getEvent: function (event) {
@@ -134,7 +134,7 @@
                 }
             }
             // if (typeof data=='function') {
-                //TODO
+            //TODO
             // }
             return this;
         },
@@ -144,20 +144,20 @@
 
 var Sv = {
     defineProperty: function (mapdata, key, val, getter, setter) {
-        var obj={};
-        Object.keys(mapdata).forEach(function(key,i,arr) {
-            obj[key]=mapdata[key]
+        var obj = {};
+        Object.keys(mapdata).forEach(function (key, i, arr) {
+            obj[key] = mapdata[key]
         })
         Object.defineProperty(mapdata, key, {
             enumerable: true,
             configurable: true,
             get: function () {
-                if (getter != null) {getter(val, key);return};
+                getter ? getter(val, key) : null;
                 return obj[key];
             },
             set: function (v) {
-                obj[key]=v
-                if (setter != null) {setter(v, key);return};
+                obj[key] = v;
+                setter ? setter(v, key) : null;
             }
         })
     },
