@@ -7,7 +7,16 @@ function info(obj, msg) {
     }
     console.log(info + '---' + msg)
 }
-
+/*=====================================================
+    //模型建立
+    Sv.model('component（//模型名称）', function () {
+        this.component（//与模型同名对象字面量） = {
+            //模型方法，用于继承或者调用
+        };
+        this.action = function () {
+            //模型实例化时运行函数
+        }
+=======================================================*/
 
 /* 建立模型 */
 Sv.model('component', function () {
@@ -16,7 +25,6 @@ Sv.model('component', function () {
             console.log('ss')
         }
     }
-    this.vm={};
     this.observe={};
     this.action = function () {
         var arr=[];
@@ -26,40 +34,36 @@ Sv.model('component', function () {
             key.setAttribute('tdata', tdata);
         });
         var html = Sv.tplEngine(vdom.innerHTML, this.data);
-        
         //处理dom
-      //  $.ready(function () {
-            document.querySelector(this.scope).innerHTML = html;
-            var dom = document.querySelector(this.scope).querySelectorAll('*');
-            $.each(dom, function (key, i,self) {
-                var tdata = key.tdata = key.getAttribute('tdata');
-                key.removeAttribute('tdata');
-                arr.push([tdata,key]);
-                if (!this.observe.hasOwnProperty(key)) {
-                    this.observe[tdata] =[];
-                }
-            }.bind(this));
-            //映射对象
-            $.each(arr,function(key,i,arr){
-                this.observe[key[0]].push(key[1])
-            }.bind(this))
+        document.querySelector(this.scope).innerHTML = html;
+        var dom = document.querySelector(this.scope).querySelectorAll('*');
+        $.each(dom, function (key, i,self) {
+            var tdata = key.tdata = key.getAttribute('tdata');
+            key.removeAttribute('tdata');
+            arr.push([tdata,key]);
+            if (!this.observe.hasOwnProperty(key)) {
+                this.observe[tdata] =[];
+            }
+        }.bind(this));
+        //映射对象
+        $.each(arr,function(key,i,arr){
+            this.observe[key[0]].push(key[1])
+        }.bind(this))
         
-            //test
-            // var dd=document.querySelector(this.scope).querySelectorAll('*');
-            // [].slice.call(dd).forEach(function (key,i,self) {
-            //     console.log(key.tdata)
-            // }) 
+        //test
+        // var dd=document.querySelector(this.scope).querySelectorAll('*');
+        // [].slice.call(dd).forEach(function (key,i,self) {
+        //     console.log(key.tdata)
+        // }) 
            
-       // }.bind(this));
+        //vm
         var observe=this.observe;
         Sv.observe(this.data,this.data,null,setter);
         function setter(val,key){
-            console.info('4545454545')
             $.each(observe[key],function(key,i,arr){
                 key.innerHTML=val
             })
         };
-        
     }
 });
 /* 建立模型 */
@@ -73,7 +77,7 @@ Sv.model('test', function () {
 
 })
 
-$.ready(function(){
+$.load(function(){
     window.tpl = new Sv.component({
         scope: '#dss',
         extend: ['test'],
@@ -99,15 +103,18 @@ $.ready(function(){
 
 
     //测试一： this指向模型，与模型配置 //this 与模型this保持一致
-tpl.controller(function () {
-    info(this, '!this is a "tpl.controller" function ')
-})
-if (tpl.tpl) {
-    info(tpl, '!this is a "tpl obj" function ')
-}
+    tpl.controller(function () {
+        info(this, '!this is a "tpl.controller" function ')
+    })
+    if (tpl.tpl) {
+        info(tpl, '!this is a "tpl obj" function ')
+    }
 
 
-})
+});
+
+
+
 
 
 

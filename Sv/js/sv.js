@@ -158,7 +158,6 @@ var Sv = {
             set: function (v) {
                 obj[key]=v
                 if (setter != null) {setter(v, key);return};
-                val = v;
             }
         })
     },
