@@ -37,11 +37,11 @@
     };
     $.extend = function (source) {
         for (var key in source) {
-            if (!$.hasOwnProperty(key)) {
+            // if (!$.hasOwnProperty(key)) {
                 $[key] = source[key];
-            } else {
-                throw '$.extend (' + key + ') already exist'
-            }
+            // } else {
+                // throw '$.extend (' + key + ') already exist'
+            // }
         }
     };
     window[o] = $;
@@ -66,6 +66,7 @@
     function removeEvent(element, type, callback) {
         element.removeEventListener(type, callback, false);
     };
+    //其它
     $.extend({
         ready: function (callback) {
             addEvent(document, 'DOMContentLoaded', null, callback)
@@ -104,6 +105,7 @@
             }
         },
     });
+    //dom操作
     $.fnExtend({
         eq: function (i) {
             return $(this[i], this.selector, i)
@@ -112,6 +114,7 @@
             return $(e, this[0], 0)
         },
     });
+    //事件
     $.fnExtend({
         addEvent: function (type, selector, callback) {
             addEvent(this, type, selector, callback);
@@ -141,7 +144,7 @@
 
     });
 });
-
+//module
 var Sv = {
     defineProperty: function (mapdata, key, val, getter, setter) {
         var obj = {};
@@ -206,15 +209,16 @@ var Sv = {
         }
         return Engine(tpl, data)
     },
-    initModule: function (arg, modelFn, modelName) {
-        if (arg) {
+    initModule: function (config, modelFn, modelName) {
+        if (config) {
             var obj = {
-                tpl: arg.tpl,
-                data: arg.data,
-                scope: typeof arg === 'string' ? arg : arg.scope, //new Sv.template('#dss')
+                tpl: config.tpl,
+                tplUrl:config.tplUrl,
+                data: config.data,
+                scope: typeof config === 'string' ? config : config.scope,
             }
-            if (arg.extend && arg.extend[0]) {
-                arg.extend.forEach(function (key, i, self) {
+            if (config.extend && config.extend[0]) {
+                config.extend.forEach(function (key, i, self) {
                     obj[key] = Sv[key + 'Extend'];
                 })
             }
@@ -222,8 +226,8 @@ var Sv = {
             var model_o = new modelFn();
             model_o.action();
             //将配置赋值到根对象模型
-            for (var key in arg) {
-                if (key != 'controller') this[key] = arg[key]
+            for (var key in config) {
+                if (key != 'controller') this[key] = config[key]
             }
         };
         //执行实例对象controller函数
@@ -231,13 +235,14 @@ var Sv = {
             fn ? fn.call(model_o) : null;
         }
         //实例化模型后使函数this 指向模型//执行配置函数
-        arg ? arg.run ? arg.run.call(model_o) : null : null;
-
+        config ? config.run ? config.run.call(model_o) : null : null;
     },
     model: function (modelName, modelFn) {
         Sv[modelName + 'Extend'] = new modelFn()[modelName];
-        Sv[modelName] = function (arg) {
-            Sv.initModule.call(this, arg, modelFn, modelName)
+        Sv[modelName] = function (config) {
+            Sv.initModule.call(this, config, modelFn, modelName)
         };
     }
 };
+
+

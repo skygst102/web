@@ -74,6 +74,7 @@ $.load(function(){
             k: '<script2>',
             s:'0.000'
         },
+        tplUrl:'',
         tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div><div>{{s}}</div>',
         run: function () {
             info(this, '!this is a "run" function 137')
@@ -83,6 +84,7 @@ $.load(function(){
             }
             console.log(this)
             this.data.k='12'
+            this.data.ss='ss'
         },
     });
 
@@ -95,6 +97,8 @@ $.load(function(){
     }
 
 });
+
+
 
 
 //在浏览器console 内输入  tpl.data.k='45646466' 可测试数据绑定效果
@@ -120,3 +124,8 @@ $.load(function(){
 // })
 
 
+//TODO
+//tplUrl    ==+
+
+
+console.log($.getJSON)
