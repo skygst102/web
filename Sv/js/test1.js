@@ -8,7 +8,7 @@ function info(obj, msg) {
     console.log(info + '---' + msg)
 }
 
-var obj={}
+
 /* 建立模型 */
 Sv.model('component', function () {
     this.component = {
@@ -16,6 +16,7 @@ Sv.model('component', function () {
             console.log('ss')
         }
     }
+    this.vm={};
     this.observe={};
     this.action = function () {
         var arr=[];
@@ -27,7 +28,7 @@ Sv.model('component', function () {
         var html = Sv.tplEngine(vdom.innerHTML, this.data);
         
         //处理dom
-        $.ready(function () {
+      //  $.ready(function () {
             document.querySelector(this.scope).innerHTML = html;
             var dom = document.querySelector(this.scope).querySelectorAll('*');
             $.each(dom, function (key, i,self) {
@@ -49,22 +50,19 @@ Sv.model('component', function () {
             //     console.log(key.tdata)
             // }) 
            
-        }.bind(this));
-        obj=this.observe
+       // }.bind(this));
+        var obj=this.observe;
         
         Sv.observe(this.data,this.data,null,setter);
         function setter(val,key){
-            console.log('4545454545')
+            console.info('4545454545')
                 // $.ready(function(){
-                //     console.log(obj)
-                //     console.log('12')
-                //     $.each(this.observe[key],function(key,i,arr){
-                //         console.log(key.innerHTML)
-                //         key.innerHTML=val
-                //     })
+                    $.each(obj[key],function(key,i,arr){
+                       // console.log(key.innerHTML)
+                        key.innerHTML=val
+                    })
                    
-                // }.bind(this))
-           
+                // })
         }
         
     }
@@ -80,27 +78,43 @@ Sv.model('test', function () {
 
 })
 
+$.ready(function(){
+    window.tpl = new Sv.component({
+        scope: '#dss',
+        extend: ['test'],
+        data:{
+            k: '<script2>',
+            s:'0.000'
+        },
+        tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div><div>{{s}}</div>',
+        run: function () {
+            info(this, '!this is a "run" function 137')
+            // console.log(this.tpl)
+            if (this.test.tt() == 'tt') {
+                console.log('调用成功')
+            }
+            console.log(this)
+            this.data.k='12'
+        },
+    });
 
 
-var tpl = new Sv.component({
-    scope: '#dss',
-    extend: ['test'],
-    data: {
-        k: '<script>',
-        s:'0.000'
-    },
-    tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div><div>{{s}}</div>',
-    run: function () {
-        info(this, '!this is a "run" function 137')
-        // console.log(this.tpl)
-        if (this.test.tt() == 'tt') {
-            console.log('调用成功')
-        }
-        console.log(this)
-        console.log(this.data.k='12')
 
-    },
+
+
+
+    //测试一： this指向模型，与模型配置 //this 与模型this保持一致
+tpl.controller(function () {
+    info(this, '!this is a "tpl.controller" function ')
 })
+if (tpl.tpl) {
+    info(tpl, '!this is a "tpl obj" function ')
+}
+
+
+})
+
+
 
 // var tpl2 = new Sv.component({
 //     scope: '#ds',
@@ -115,13 +129,6 @@ var tpl = new Sv.component({
 //     },
 // })
 
-//测试一： this指向模型，与模型配置 //this 与模型this保持一致
-tpl.controller(function () {
-    info(this, '!this is a "tpl.controller" function ')
-})
-if (tpl.tpl) {
-    info(tpl, '!this is a "tpl obj" function ')
-}
 
 
 // $.load(function(){

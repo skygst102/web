@@ -144,22 +144,28 @@
 
 var Sv = {
     defineProperty: function (mapdata, key, val, getter, setter) {
+        console.log(mapdata)
+        var obj={};
+        
         Object.defineProperty(mapdata, key, {
             enumerable: true,
             configurable: true,
             get: function () {
                 if (getter != null) {getter(val, key);return};
-                return val;
+                return obj[key];
             },
             set: function (v) {
                 //TODO
-                $.ready(function(){
-                    console.log('46')
-                })
+                obj[key]=v
+                console.log('setter')
+                // $.ready(function(){
+                //     console.log('ready setter')
+                // })
                 if (setter != null) {setter(v, key);return};
                 val = v;
             }
         })
+        console.log(obj)
     },
     observe: function (sourcedata, mapdata, getter, setter) {
         Object.keys(sourcedata).forEach(function (key) {
