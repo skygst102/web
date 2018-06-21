@@ -7,16 +7,6 @@ function info(obj, msg) {
     }
     console.log(info + '---' + msg)
 }
-/*=====================================================
-    //模型建立
-    Sv.model('component（//模型名称）', function () {
-        this.component（//与模型同名对象字面量） = {
-            //模型方法，用于继承或者调用
-        };
-        this.action = function () {
-            //模型实例化时运行函数
-        }
-=======================================================*/
 
 /* 建立模型 */
 Sv.model('component', function () {
