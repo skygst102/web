@@ -224,7 +224,9 @@ var Sv = {
             }
             modelFn.prototype = obj;
             var model_o = new modelFn();
-            model_o.action();
+            $.ready(function(){
+                model_o.action();
+            })
             //将配置赋值到根对象模型
             for (var key in config) {
                 if (key != 'controller') this[key] = config[key]

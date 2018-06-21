@@ -19,20 +19,28 @@ Sv.model('component', function () {
     this.action = function () {
         var arr=[];
         var vdom = Sv.vdom(this.tpl);
+        var RegExp=/\{\{([\s\S])\}\}/;
         $.each(vdom.querySelectorAll('*'), function (key, i) {
-            var tdata = key.childNodes[0].nodeValue.replace(/\{\{|\}\}/g, '');
-            key.setAttribute('tdata', tdata);
+            var nodeval=key.childNodes[0].nodeValue;
+            if (RegExp.test(nodeval)) {
+                var tdata = nodeval.match(RegExp)[1];
+                key.setAttribute('tdata', tdata);
+            }
         });
+        // console.log(vdom)
         var html = Sv.tplEngine(vdom.innerHTML, this.data);
         //处理dom
         document.querySelector(this.scope).innerHTML = html;
         var dom = document.querySelector(this.scope).querySelectorAll('*');
         $.each(dom, function (key, i,self) {
-            var tdata = key.tdata = key.getAttribute('tdata');
-            key.removeAttribute('tdata');
-            arr.push([tdata,key]);
-            if (!this.observe.hasOwnProperty(key)) {
-                this.observe[tdata] =[];
+            var attr=key.getAttribute('tdata');
+            if (attr) {
+                var tdata = key.tdata = attr;
+                key.removeAttribute('tdata');
+                arr.push([tdata,key]);
+                if (!this.observe.hasOwnProperty(key)) {
+                    this.observe[tdata] =[];
+                }
             }
         }.bind(this));
         //映射对象
@@ -48,6 +56,7 @@ Sv.model('component', function () {
            
         //vm
         var observe=this.observe;
+        console.log(observe)
         Sv.observe(this.data,this.data,null,setter);
         function setter(val,key){
             $.each(observe[key],function(key,i,arr){
@@ -66,8 +75,7 @@ Sv.model('test', function () {
     }
 })
 
-$.load(function(){
-    window.tpl = new Sv.component({
+    var tpl = new Sv.component({
         scope: '#dss',
         extend: ['test'],
         data:{
@@ -75,7 +83,7 @@ $.load(function(){
             s:'0.000'
         },
         tplUrl:'',
-        tpl: '<div>{{k}}<div>{{k}}</div></div><div>{{k}}</div><div>{{s}}</div>',
+        tpl: '<div>120....<span>{{k}}12</span><div>0202</div></div><div>{{k}}</div><div>{{s}}</div>',
         run: function () {
             info(this, '!this is a "run" function 137')
             // console.log(this.tpl)
@@ -96,7 +104,6 @@ $.load(function(){
         info(tpl, '!this is a "tpl obj" function ')
     }
 
-});
 
 
 
@@ -125,7 +132,6 @@ $.load(function(){
 
 
 //TODO
-//tplUrl    ==+
+//tplUrl      ==+
+//tpl数组     ==+
 
-
-console.log($.getJSON)

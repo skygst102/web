@@ -114,9 +114,5 @@ $.load(function(){
 
 
 
-// $.load(function(){
-//     tpl.data.k = 'k===+++++'
-//     console.log(tpl)
-// })
 
 
