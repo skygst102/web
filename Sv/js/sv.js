@@ -74,14 +74,22 @@
         load: function (callback) {
             addEvent(window, 'load', null, callback)
         },
+        typeof:function(o,type){
+            var otype;
+            o!==null? otype=Object.prototype.toString.call(o).match(/\s(.*)\]$/)[1]:otype='Null'
+            type ? otype=(otype==type):null;
+            return otype
+        },
         each: function (obj, fn) {
             var r;
             if (typeof obj.length == 'number') {
                 for (var i = 0; i < obj.length; i++) {
                     if (fn.call(obj, obj[i], i, obj) === false || i == 100) break;
                 }
-            } else if (obj instanceof Object) {
+            } else if ($.typeof(obj,'Object') ) {
                 for (var key in obj) fn.call(obj, obj[key], i, obj);
+            }else{
+                throw obj  +''
             }
         },
         getEvent: function (event) {

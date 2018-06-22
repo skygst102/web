@@ -22,12 +22,18 @@ Sv.model('component', function () {
         var RegExp=/\{\{([\s\S])\}\}/;
         $.each(vdom.querySelectorAll('*'), function (key, i) {
             var nodeval=key.childNodes[0].nodeValue;
+            console.log(key)
+            
             if (RegExp.test(nodeval)) {
                 var tdata = nodeval.match(RegExp)[1];
                 key.setAttribute('tdata', tdata);
             }
         });
-        // console.log(vdom)
+        // console.log(vdom);
+
+        // console.log(vdom.querySelectorAll('*'))
+
+       
         var html = Sv.tplEngine(vdom.innerHTML, this.data);
         //处理dom
         document.querySelector(this.scope).innerHTML = html;
@@ -56,7 +62,7 @@ Sv.model('component', function () {
            
         //vm
         var observe=this.observe;
-        console.log(observe)
+        // console.log(observe)
         Sv.observe(this.data,this.data,null,setter);
         function setter(val,key){
             $.each(observe[key],function(key,i,arr){
@@ -83,7 +89,7 @@ Sv.model('test', function () {
             s:'0.000'
         },
         tplUrl:'',
-        tpl: '<div>120....<span>{{k}}12</span><div>0202</div></div><div>{{k}}</div><div>{{s}}</div>',
+        tpl: '<div>120....{{k}}<span>{{k}}12</span><div>0202</div>0.000</div><div>{{k}}</div><div>{{s}}</div>',
         run: function () {
             info(this, '!this is a "run" function 137')
             // console.log(this.tpl)
@@ -104,7 +110,7 @@ Sv.model('test', function () {
         info(tpl, '!this is a "tpl obj" function ')
     }
 
-
+    
 
 
 
