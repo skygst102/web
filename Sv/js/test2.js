@@ -20,39 +20,42 @@ Sv.model('component', function () {
         var arr=[];
         var vdom = Sv.vdom(this.tpl);
         var RegExp=/\{\{([\s\S])\}\}/;
-        $.each(vdom.querySelectorAll('*'), function (key, i) {
+        $.each(vdom.querySelectorAll('*'), function (key, i,self) {
             var nodeval=key.childNodes[0].nodeValue;
-            console.log(key)
-            
             if (RegExp.test(nodeval)) {
                 var tdata = nodeval.match(RegExp)[1];
+                var svTpl=key.childNodes[0].nodeValue.replace(RegExp,'{$1}');
                 key.setAttribute('tdata', tdata);
+                key.setAttribute('svTpl', svTpl);
+                
             }
-        });
-        // console.log(vdom);
-
-        // console.log(vdom.querySelectorAll('*'))
-
-       
-        var html = Sv.tplEngine(vdom.innerHTML, this.data);
+        }.bind(this));
+    
+        var html = Sv.tplEngine(vdom.innerHTML, this.store);
         //处理dom
         document.querySelector(this.scope).innerHTML = html;
         var dom = document.querySelector(this.scope).querySelectorAll('*');
         $.each(dom, function (key, i,self) {
-            var attr=key.getAttribute('tdata');
-            if (attr) {
-                var tdata = key.tdata = attr;
+            var tdata=key.getAttribute('tdata');
+            var svTpl=key.getAttribute('svTpl');
+            if (tdata) {
+                key.svTpl = tdata;
+                key.tdata = svTpl;
                 key.removeAttribute('tdata');
-                arr.push([tdata,key]);
+                key.removeAttribute('svTpl');
+                arr.push([tdata,key,svTpl]);
                 if (!this.observe.hasOwnProperty(key)) {
                     this.observe[tdata] =[];
                 }
             }
         }.bind(this));
+        console.log(arr)
         //映射对象
         $.each(arr,function(key,i,arr){
-            this.observe[key[0]].push(key[1])
+            console.log(key)
+            this.observe[key[0]].push([key[1],key[2]])
         }.bind(this))
+        console.log(this.observe)
         
         //test
         // var dd=document.querySelector(this.scope).querySelectorAll('*');
@@ -62,10 +65,10 @@ Sv.model('component', function () {
            
         //vm
         var observe=this.observe;
-        // console.log(observe)
-        Sv.observe(this.data,this.data,null,setter);
+        Sv.observe(this.store,this.store,null,setter);
         function setter(val,key){
             $.each(observe[key],function(key,i,arr){
+                console.log(key)
                 key.innerHTML=val
             })
         };
@@ -84,11 +87,10 @@ Sv.model('test', function () {
     var tpl = new Sv.component({
         scope: '#dss',
         extend: ['test'],
-        data:{
+        store:{
             k: '<script2>',
             s:'0.000'
         },
-        tplUrl:'',
         tpl: '<div>120....{{k}}<span>{{k}}12</span><div>0202</div>0.000</div><div>{{k}}</div><div>{{s}}</div>',
         run: function () {
             info(this, '!this is a "run" function 137')
@@ -97,8 +99,8 @@ Sv.model('test', function () {
                 console.log('调用成功')
             }
             console.log(this)
-            this.data.k='12'
-            this.data.ss='ss'
+            this.store.k='12'
+            this.store.ss='ss'
         },
     });
 
@@ -111,10 +113,10 @@ Sv.model('test', function () {
     }
 
     
+    tpl.store.k='4000'
 
 
-
-//在浏览器console 内输入  tpl.data.k='45646466' 可测试数据绑定效果
+//在浏览器console 内输入  tpl.store.k='45646466' 可测试数据绑定效果
 
 // var tpl2 = new Sv.component({
 //     scope: '#ds',

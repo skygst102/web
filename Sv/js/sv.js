@@ -82,12 +82,14 @@
         },
         each: function (obj, fn) {
             var r;
-            if (typeof obj.length == 'number') {
-                for (var i = 0; i < obj.length; i++) {
-                    if (fn.call(obj, obj[i], i, obj) === false || i == 100) break;
-                }
-            } else if ($.typeof(obj,'Object') ) {
+            if ($.typeof(obj,'Object') ) {
                 for (var key in obj) fn.call(obj, obj[key], i, obj);
+            } else if (obj.length) {
+                for (var i = 0; i < obj.length; i++) {
+                    var rFn=fn.call(obj, obj[i], i, obj);
+                    if ( rFn=== false || i == 1000) break;
+                    if ( rFn=== true || i == 1000) continue;
+                }
             }else{
                 throw obj  +''
             }
@@ -222,7 +224,7 @@ var Sv = {
             var obj = {
                 tpl: config.tpl,
                 tplUrl:config.tplUrl,
-                data: config.data,
+                store: config.store,
                 scope: typeof config === 'string' ? config : config.scope,
             }
             if (config.extend && config.extend[0]) {
